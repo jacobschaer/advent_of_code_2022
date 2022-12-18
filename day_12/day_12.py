@@ -28,6 +28,9 @@ def walk(best, grid, start, distance):
 	#print(f"Start: {start}")
 	if best[i][j] is None or distance < best[i][j]:
 		best[i][j] = distance
+		# We could optimize by taking the choice that gets us closest first
+		# as it's mostly likely unproductive to move away most of the time,
+		# but in the scheme of things it won't make much difference
 		for step_i, step_j in ((0,1), (1,0), (-1, 0), (0, -1)):
 			#print(f"Stepping: {step_i}, {step_j}")
 			new_i, new_j = i + step_i, j + step_j
@@ -49,9 +52,13 @@ def walk(best, grid, start, distance):
 walk(best, graph, start, 0)
 print(best[end[0]][end[1]])
 
-# Part 2 - This is brute force, we can do better by giving up on paths
-# that are no better than a previously found one, but it doesn't take long
-# to go this route
+# Part 2 - This is brute force, but it doesn't take long
+# The optimal algorithm is:
+# Initialize best to the value determined in part 1, as we're
+# not interested in any paths to cells that are "worse" than
+# the one we found. Then, start at the endpoint and work our way
+# backwards using the same rules to find the best distance from 
+# *any* cell.  This will save a lot of redundant routes
 best_start = start
 best_length = best[end[0]][end[1]]
 for i in range(len(graph)):
